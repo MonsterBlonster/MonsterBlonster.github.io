@@ -2,7 +2,9 @@
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" >
-<title>Triangle strip t-shape</title>
+<title>Teppi Sierpinski</title>
+
+
 <script id="vertex-shader" type="x-shader/x-vertex">
 attribute vec4 vPosition;
 
@@ -23,10 +25,11 @@ main()
 }
 </script>
 
-<script type="text/javascript" src="/Forrit/Common/webgl-utils.js"></script>
-<script type="text/javascript" src="/Forrit/Common/initShaders.js"></script>
-<script type="text/javascript" src="T-shape-strip.js"></script>
-</head>
+<script type="text/javascript" src="../Common/webgl-utils.js"></script>
+<script type="text/javascript" src="../Common/initShaders.js"></script>
+<script type="text/javascript" src="../Common/MV.js"></script>
+<script type="text/javascript" src="gasket2.js"></script>
+</head>   
 
 <body>
 <canvas id="gl-canvas" width="512" height="512">
