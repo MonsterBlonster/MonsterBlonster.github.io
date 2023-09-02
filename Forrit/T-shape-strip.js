@@ -16,9 +16,14 @@ window.onload = function init()
 
     var vertices = new Float32Array([ 
                             -0.8, 0.8, 
-                            -0.8, 0.4, 
-                            -0.2, 0.8,
-                            0.8, 0.8]);
+                            -0.8, 0.4,
+                            0.8, 0.8,
+                            0.8, 0.4,
+                            0.2, 0.8,
+                            0.2, 0.4,
+                            -0.2, 0.4,
+                            0.2, -0.8,
+                            -0.2, -0.8]);
 
     //  Configure WebGL
 
@@ -48,5 +53,5 @@ window.onload = function init()
 
 function render() {
     gl.clear( gl.COLOR_BUFFER_BIT );
-    gl.drawArrays( gl.TRIANGLE_STRIP, 0, 4 );
+    gl.drawArrays( gl.TRIANGLE_STRIP, 0, 9 );
 }

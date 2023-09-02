@@ -5,15 +5,13 @@ var NumTriangles = 100;
 var colorLoc;
 var program;
 
-var triangleSize = 0.05; // Fixed size for all triangles
+var triangleSize = 0.05;
 
 window.onload = function init() {
     var canvas = document.getElementById("gl-canvas");
 
     gl = WebGLUtils.setupWebGL(canvas);
     if (!gl) { alert("WebGL isn't available"); }
-
-    // Initialize WebGL and shaders here
 
     // Initialize points array with random triangles
     points = [];
@@ -36,11 +34,9 @@ window.onload = function init() {
     gl.viewport(0, 0, canvas.width, canvas.height);
     gl.clearColor(1.0, 1.0, 1.0, 1.0);
 
-    // Load shaders and initialize attribute buffers
     program = initShaders(gl, "vertex-shader", "fragment-shader");
     gl.useProgram(program);
 
-    // Load the data into the GPU
     var bufferId = gl.createBuffer();
     gl.bindBuffer(gl.ARRAY_BUFFER, bufferId);
     gl.bufferData(gl.ARRAY_BUFFER, flatten(points), gl.STATIC_DRAW);
@@ -61,10 +57,8 @@ function render() {
         // Generate a random color for each triangle
         var randomColor = vec4(Math.random(), Math.random(), Math.random(), 1.0);
 
-        // Set the color uniform
         gl.uniform4fv(colorLoc, randomColor);
 
-        // Draw one triangle at a time
         gl.drawArrays(gl.TRIANGLES, i * 3, 3);
     }
 }

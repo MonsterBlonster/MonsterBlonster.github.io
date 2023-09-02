@@ -5,7 +5,8 @@ var gl;
 
 var points = [];
 
-var NumTimesToSubdivide = 5;
+var NumTimesToSubdivide = 4;
+
 
 window.onload = function init()
 {
@@ -22,11 +23,12 @@ window.onload = function init()
 
     var vertices = [
         vec2( -1, -1 ),
-        vec2(  0,  1 ),
-        vec2(  1, -1 )
+        vec2(  -1, 1 ),
+        vec2(  1, 1 ),
+        vec2( 1, -1)
     ];
 
-    divideTriangle( vertices[0], vertices[1], vertices[2],
+    divideSquare( vertices[0], vertices[1], vertices[2], vertices[3],
                     NumTimesToSubdivide);
 
     //
@@ -55,39 +57,39 @@ window.onload = function init()
     render();
 };
 
-function triangle( a, b, c )
+function carpet( a, b, c, d )
 {
-    points.push( a, b, c );
+    points.push(a, b, c, a, d, c);
 }
 
-function divideTriangle( a, b, c, count )
+function divideSquare( a, b, c, d, count )
 {
 
     // check for end of recursion
 
-    if ( count === 0 ) {
-        triangle( a, b, c );
-    }
-    else {
+    if (count === 0) {
+        carpet(a, b, c, d);
+    } else {
+        var ab = mix(a, b, 1 / 3);
+        var bc = mix(b, c, 1 / 3);
+        var cd = mix(c, d, 1 / 3);
+        var da = mix(d, a, 1 / 3);
 
-        //bisect the sides
-
-        var ab = mix( a, b, 0.5 );
-        var ac = mix( a, c, 0.5 );
-        var bc = mix( b, c, 0.5 );
+        // Calculate the smaller squares within the current square
+        var center = mix(a, c, 0.5);
 
         --count;
 
-        // three new triangles
+        divideSquare(a, ab, center, da, count);
+        divideSquare(ab, b, bc, center, count);
+        divideSquare(center, bc, c, cd, count);
+        divideSquare(da, center, cd, d, count);
 
-        divideTriangle( a, ab, ac, count );
-        divideTriangle( c, ac, bc, count );
-        divideTriangle( b, bc, ab, count );
     }
 }
 
 function render()
 {
     gl.clear( gl.COLOR_BUFFER_BIT );
-    gl.drawArrays( gl.TRIANGLES, 0, points.length );
+    gl.drawArrays(gl.TRIANGLES, 0, points.length);
 }
