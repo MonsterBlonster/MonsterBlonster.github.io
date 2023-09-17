@@ -1,38 +1,44 @@
 <!DOCTYPE html>
 <html>
-<head>
-<meta http-equiv="Content-Type" content="text/html;charset=utf-8" >
-<title>100 mismunandi þríhyrningar</title>
 
 <script id="vertex-shader" type="x-shader/x-vertex">
+
+uniform vec2 boxPos;
 attribute vec4 vPosition;
+
+varying vec4 fColor;
+uniform float fLoc;
 
 void
 main()
 {
-	gl_PointSize = 1.0;
-    gl_Position = vPosition;
+    vec4 t = vPosition;
+    t.xy += boxPos;
+    gl_Position = t;
+
 }
 </script>
 
 <script id="fragment-shader" type="x-shader/x-fragment">
+
 precision mediump float;
-uniform vec4 fColor;
+
+varying vec4 fColor;
+uniform vec4 rcolor;
 
 void
 main()
 {
-    gl_FragColor = fColor;
+    gl_FragColor = rcolor;
 }
-</script>
+</script> 
 
 <script type="text/javascript" src="/Forrit/Common/initShaders.js"></script>
 <script type="text/javascript" src="/Forrit/Common/webgl-utils.js"></script>
 <script type="text/javascript" src="/Forrit/Common/MV.js"></script>
-<script type="text/javascript" src="gasket1-lit.js"></script>
-</head>
+<script type="text/javascript" src="frogger.js"></script>
 
 <body>
-<canvas id="gl-canvas" width="512" height="512">
+<canvas id="gl-canvas" width="1000" height="600">
 </body>
 </html>
