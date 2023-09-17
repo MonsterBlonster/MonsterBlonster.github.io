@@ -6,9 +6,6 @@
 uniform vec2 boxPos;
 attribute vec4 vPosition;
 
-varying vec4 fColor;
-uniform float fLoc;
-
 void
 main()
 {
@@ -23,14 +20,13 @@ main()
 
 precision mediump float;
 
-varying vec4 fColor;
 uniform vec4 rcolor;
 
-void
-main()
+void main()
 {
     gl_FragColor = rcolor;
 }
+
 </script> 
 
 <script type="text/javascript" src="/Forrit/Common/initShaders.js"></script>
