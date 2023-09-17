@@ -228,11 +228,11 @@ var leftCars = {
     // Set car speed
     for (var i = 0; i < vertices.length; i++) {
       if (vertices == this.vertices[0]) {
-        vertices[i][0] += 0.009;
+        vertices[i][0] += 0.0065;
       } else if (vertices == this.vertices[1]) {
-        vertices[i][0] += 0.0075;
+        vertices[i][0] += 0.0055;
       } else {
-        vertices[i][0] += 0.003;
+        vertices[i][0] += 0.0030;
       }
       // Get new car in lane
       if (vertices[i][0] > 1.5) {
