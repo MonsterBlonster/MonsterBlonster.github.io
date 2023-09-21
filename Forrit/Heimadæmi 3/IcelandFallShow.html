@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html;charset=utf-8" >
+<title>Fallandi punktar</title>
+
+<script id="vertex-shader" type="x-shader/x-vertex">
+    uniform float time;
+    attribute vec4 vPosition;
+
+    void main()
+    {
+        gl_PointSize = 3.0;
+        vec4 tpos = vPosition;
+
+        tpos.y = 1.0 - mod(0.0015*time + tpos.y+1.0, 2.0);
+
+        gl_Position = tpos;
+    }
+</script>
+
+<script id="fragment-shader" type="x-shader/x-fragment">
+    precision mediump float;
+
+    void main()
+    {
+        vec4 blue = vec4(0.0, 0.0, 1.0, 1.0);
+        vec4 white = vec4(1.0, 1.0, 1.0, 1.0);
+        vec4 red = vec4(1.0, 0.0, 0.0, 1.0);
+
+        // Check if the fragment is inside one of the blue squares
+        if ((gl_FragCoord.x < 100.0 || gl_FragCoord.x > 600.0) && (gl_FragCoord.y < 100.0 || gl_FragCoord.y > 600.0)) {
+            gl_FragColor = blue;
+        } else {
+            // Check if the fragment is inside the white cross
+            if (abs(gl_FragCoord.x - 200.0) <= 30.0 || abs(gl_FragCoord.y - 300.0) <= 30.0) {
+                // Check if the fragment is inside the red cross
+                if (abs(gl_FragCoord.x - 200.0) <= 15.0 || abs(gl_FragCoord.y - 300.0) <= 15.0) {
+                    gl_FragColor = red;
+                } else {
+                    gl_FragColor = white;
+                }
+            } else {
+                gl_FragColor = blue;
+            }
+        }
+    }
+</script>
+
+
+<script type="text/javascript" src="../Common/webgl-utils.js"></script>
+<script type="text/javascript" src="../Common/initShaders.js"></script>
+<script type="text/javascript" src="../Common/MV.js"></script>
+<script type="text/javascript" src="IcelandFallShow.js"></script>
+</head>
+
+<bodisY>
+<canvas id="gl-canvas" width="600" height="600">
+</bodisY>
+</html>
