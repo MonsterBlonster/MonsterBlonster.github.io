@@ -137,31 +137,31 @@ function render()
 
     //build the chair
     // First the right leg
-    mv1 = mult( mv, translate( -0.3, -0.5, 0.0 ) );
+    mv1 = mult( mv, translate( -0.3, -0.2, 0.0 ) );
     mv1 = mult( mv1, scalem( 0.1, 0.6, 0.1 ) );
     gl.uniformMatrix4fv(matrixLoc, false, flatten(mv1));
     gl.drawArrays( gl.TRIANGLES, 0, numVertices );
 
     // Then the left leg
-    mv1 = mult( mv, translate( 0.3, -0.5, 0.0 ) );
+    mv1 = mult( mv, translate( 0.3, -0.2, 0.0 ) );
     mv1 = mult( mv1, scalem( 0.1, 0.6 , 0.1 ) );
     gl.uniformMatrix4fv(matrixLoc, false, flatten(mv1));
     gl.drawArrays( gl.TRIANGLES, 0, numVertices );
 
     //right leg 2
-    mv1 = mult( mv, translate( -0.3, -0.5, 0.4 ) );
+    mv1 = mult( mv, translate( -0.3, -0.2, 0.4 ) );
     mv1 = mult( mv1, scalem( 0.1, 0.6, 0.1 ) );
     gl.uniformMatrix4fv(matrixLoc, false, flatten(mv1));
     gl.drawArrays( gl.TRIANGLES, 0, numVertices );
 
     //left leg 2
-    mv1 = mult( mv, translate( 0.3, -0.5, 0.4 ) );
+    mv1 = mult( mv, translate( 0.3, -0.2, 0.4 ) );
     mv1 = mult( mv1, scalem( 0.1, 0.6 , 0.1 ) );
     gl.uniformMatrix4fv(matrixLoc, false, flatten(mv1));
     gl.drawArrays( gl.TRIANGLES, 0, numVertices );
 
     // Finally the seat
-    mv1 = mult( mv, translate( 0.0, -0.1, 0.2 ) );
+    mv1 = mult( mv, translate( 0.0, 0.2, 0.2 ) );
     mv1 = mult( mv1, scalem( 0.7, 0.2 , 0.5 ) );
     gl.uniformMatrix4fv(matrixLoc, false, flatten(mv1));
     gl.drawArrays( gl.TRIANGLES, 0, numVertices );
