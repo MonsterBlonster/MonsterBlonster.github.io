@@ -1,7 +1,7 @@
 var canvas;
 var gl;
 
-var school = []; // All the fish
+var fishGroup = []; // All the fish
 var boxSize = 15; // Fish container
 
 var fishCount = 50; // Number of fish
@@ -25,7 +25,7 @@ var zView = boxSize * 2.5;
 
 var proLoc;
 var mvLoc;
-var colorLoc;
+var locColor;
 
 var points = {
     fish: {
@@ -189,16 +189,15 @@ window.onload = function init() {
     var program = initShaders(gl, "vertex-shader", "fragment-shader");
     gl.useProgram(program);
 
-    var vBuffer = gl.createBuffer();
-    gl.bindBuffer(gl.ARRAY_BUFFER, vBuffer);
+    var bufferId = gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER, bufferId);
     gl.bufferData(gl.ARRAY_BUFFER, flatten(vertices), gl.STATIC_DRAW);
 
     var vPosition = gl.getAttribLocation(program, "vPosition");
     gl.vertexAttribPointer(vPosition, 4, gl.FLOAT, false, 0, 0);
     gl.enableVertexAttribArray(vPosition);
 
-    colorLoc = gl.getUniformLocation(program, "fColor");
-
+    locColor = gl.getUniformLocation(program, "fColor");
     proLoc = gl.getUniformLocation(program, "projection");
     mvLoc = gl.getUniformLocation(program, "modelview");
 
@@ -206,24 +205,22 @@ window.onload = function init() {
     var proj = perspective(90.0, 1.0, 0.1, 100.0);
     gl.uniformMatrix4fv(proLoc, false, flatten(proj));
 
-    // Generating fish
     for (let i = 0; i < fishCount; i++) {
-        school.push(newFish());
+        fishGroup.push(newFish());
     }
 
-    // Mouse handlers
     canvas.addEventListener("mousedown", function (e) {
         movement = true;
         origX = e.offsetX;
         origY = e.offsetY;
-        e.preventDefault(); // Disable drag and drop
+        e.preventDefault();
     });
 
     canvas.addEventListener("touchstart", function (e) {
         movement = true;
         origX = e.clientX || e.targetTouches[0].pageX;
         origY = e.clientY || e.targetTouches[0].pageY;
-        e.preventDefault(); // Disable drag and drop
+        e.preventDefault();
     });
 
     canvas.addEventListener("mouseup", function (e) {
@@ -281,10 +278,10 @@ function updateSliders(val, change) {
         case "fishCount":
             while (fishCount != val) {
                 if (fishCount > val) {
-                    school.pop();
+                    fishGroup.pop();
                     fishCount--;
                 } else {
-                    school.push(newFish());
+                    fishGroup.push(newFish());
                     fishCount++;
                 }
             }
@@ -297,20 +294,20 @@ function updateSliders(val, change) {
 }
 
 function newFish() {
-    var s = -Math.random() * 2 - 3;
-    var R = Math.random() * 0.7 + 0.3;
-    var G = 1 - R + 0.3;
-    var B = Math.random() * 0.5 + 0.2;
+    var speedSet = -Math.random() * 2 - 3;
+    var red = Math.random() * 0.7 + 0.3;
+    var green = 1 - red + 0.3;
+    var blue = Math.random() * 0.5 + 0.2;
 
     return {
-        bodyColor: vec4(R, G, B, 1.0),
-        botColor: vec4(R - 0.8, G - 0.1, B - 0.1, 1.0),
-        finColor: vec4(R - 0.3, G - 0.3, B - 0.3, 1.0),
+        bodyColor: vec4(red, green, blue, 1.0),
+        botColor: vec4(red - 0.8, green - 0.1, blue - 0.1, 1.0),
+        finColor: vec4(red - 0.3, green - 0.3, blue - 0.3, 1.0),
         tailRotation: Math.random() * 70 - 35,
         finRotation: Math.random() * 70,
-        tailSpeed: s,
-        finSpeed: s,
-        speed: s / 10,
+        tailSpeed: speedSet,
+        finSpeed: speedSet,
+        speed: speedSet / 10,
         size: Math.random() + 1,
         dir: randomDir(),
         pos: randomPos(boxSize - 1),
@@ -319,19 +316,18 @@ function newFish() {
 
 function updateFish(fish, index) {
     var next = nextPos(fish);
-    var iFish = true;
+    var inbound = true;
     Object.keys(next).map((d) => {
         if (
             -boxSize + fish.size * 0.5 >= next[d] ||
             next[d] >= boxSize - fish.size * 0.5
         ) {
             fish.pos[d] *= -1;
-            iFish = false;
+            inbound = false;
         }
     });
 
-    // if inbound use flocking algorithm
-    if (iFish) {
+    if (inbound) {
         var sepFish = [{ dir: fish.dir.cart, dist: sepDist }];
         var cohFish = [{ dir: fish.dir.cart, dist: cohDist }];
         var alignFish = [{ dir: fish.dir.cart, dist: alignDist }];
@@ -340,7 +336,7 @@ function updateFish(fish, index) {
             if (i == index) {
                 continue;
             }
-            var f = school[i];
+            var f = fishGroup[i];
             var dist = calcDist(fish, f);
             if (dist < cohDist) {
                 cohFish.push({ dir: getDirFromPos(f.pos, fish.pos, dist), dist });
@@ -362,7 +358,6 @@ function updateFish(fish, index) {
         fish.dir.sph = cartToSph(fish.dir.cart);
     }
 
-    // Update elements
     fish.pos = nextPos(fish);
     fish.tailRotation += fish.tailSpeed * speed;
     fish.finRotation += fish.finSpeed * speed;
@@ -372,17 +367,14 @@ function updateFish(fish, index) {
     if (fish.finRotation > 70 || fish.finRotation < 0) fish.finSpeed *= -1;
 }
 
-// Conversion from radians to degrees
 function toDegrees(angle) {
     return angle * (180 / Math.PI);
 }
 
-// Conversion from degrees to radians
 function toRadians(angle) {
     return angle * (Math.PI / 180);
 }
 
-// Conversion from from spherical coordinates to cartesian coordinates
 function sphToCart({ a, b }) {
     return {
         x: Math.sin(a) * Math.cos(b),
@@ -391,20 +383,17 @@ function sphToCart({ a, b }) {
     };
 }
 
-// Conversion from from cartesian coordinates to spherical coordinates
 function cartToSph({ x, y, z }) {
     var p = Math.sqrt(x ** 2 + y ** 2 + z ** 2);
     return { a: Math.acos(z / p), b: Math.atan2(y, x) };
 }
 
-// Returns a random direction in the 3d plane, both spherical and cartesian coordinates
 function randomDir() {
     var a = toRadians(Math.random() * 180);
     var b = toRadians(Math.random() * 360);
     return { sph: { a, b }, cart: sphToCart({ a, b }) };
 }
 
-// Returns a random position in cartesian coordinates within the +/- limit on all axis
 function randomPos(limit) {
     var x = Math.random() * 2 * limit - limit;
     var y = Math.random() * 2 * limit - limit;
@@ -412,7 +401,6 @@ function randomPos(limit) {
     return { x, y, z };
 }
 
-// Returns the next fish position
 function nextPos(fish) {
     return {
         x: fish.pos.x + fish.dir.cart.x * (fish.speed * speed),
@@ -421,7 +409,6 @@ function nextPos(fish) {
     };
 }
 
-// The distance between two fishes
 function calcDist(f1, f2) {
     return Math.sqrt(
         (f1.pos.x - f2.pos.x) ** 2 +
@@ -430,7 +417,6 @@ function calcDist(f1, f2) {
     );
 }
 
-// The average direction of directional 3d vectors
 function calcAvgXYZ(arr) {
     var len = arr.length;
     var tot = { x: 0, y: 0, z: 0 };
@@ -442,7 +428,6 @@ function calcAvgXYZ(arr) {
     return { x: tot.x / len, y: tot.y / len, z: tot.z / len };
 }
 
-// Calculates the direction of obj based on seperation, cohesion and alignment and their force
 function calcDir(sep, coh, align, curr) {
     return {
         x:
@@ -473,76 +458,67 @@ function getDirFromPos(from, to, dist) {
 }
 
 function drawFish(mv, fish) {
-    // Translate to fish pos
     mv = mult(mv, translate(fish.pos.x, fish.pos.y, fish.pos.z));
     mv = mult(mv, scalem(fish.size, fish.size, fish.size));
 
-    // Rotate to swim direction
     mv = mult(mv, rotateZ(-toDegrees(fish.dir.sph.b)));
     mv = mult(mv, rotateY(-toDegrees(fish.dir.sph.a)));
     mv = mult(mv, rotateY(-90));
 
-    // Draw fish botom
-    gl.uniform4fv(colorLoc, fish.botColor);
+    gl.uniform4fv(locColor, fish.botColor);
     gl.uniformMatrix4fv(mvLoc, false, flatten(mv));
-    gl.cullFace(gl.FRONT); // Inside
+    gl.cullFace(gl.FRONT);
     gl.drawArrays(gl.TRIANGLES, 0, NumBodyBot);
-    gl.cullFace(gl.BACK); // Outside
+    gl.cullFace(gl.BACK);
     gl.drawArrays(gl.TRIANGLES, 0, NumBodyBot);
 
-    // Draw fish top
-    gl.uniform4fv(colorLoc, fish.bodyColor);
+    gl.uniform4fv(locColor, fish.bodyColor);
     gl.uniformMatrix4fv(mvLoc, false, flatten(mv));
-    gl.cullFace(gl.FRONT); // Inside
+    gl.cullFace(gl.FRONT);
     gl.drawArrays(gl.TRIANGLES, NumBodyBot, NumBodyTop);
-    gl.cullFace(gl.BACK); // Outside
+    gl.cullFace(gl.BACK);
     gl.drawArrays(gl.TRIANGLES, NumBodyBot, NumBodyTop);
 
-    // Draw tail and rotate
-    gl.uniform4fv(colorLoc, fish.bodyColor);
+    gl.uniform4fv(locColor, fish.bodyColor);
     mv = mult(mv, translate(-0.4, 0.0, 0.0));
     mv = mult(mv, rotateY(fish.tailRotation));
     mv = mult(mv, translate(0.4, 0.0, 0.0));
     gl.uniformMatrix4fv(mvLoc, false, flatten(mv));
-    gl.cullFace(gl.FRONT); // Inside
+    gl.cullFace(gl.FRONT);
     gl.drawArrays(gl.TRIANGLES, NumBodyBot + NumBodyTop, NumTail);
-    gl.cullFace(gl.BACK); // Outside
+    gl.cullFace(gl.BACK);
     gl.drawArrays(gl.TRIANGLES, NumBodyBot + NumBodyTop, NumTail);
 
-    // reverse to fish 0.0.0
-    mv = mult(mv, translate(-0.4, 0.0, 0.0)); //___REVERSING___
-    mv = mult(mv, rotateY(-fish.tailRotation)); //___REVERSING___
-    mv = mult(mv, translate(0.4, 0.0, 0.0)); //___REVERSING___
+    mv = mult(mv, translate(-0.4, 0.0, 0.0));
+    mv = mult(mv, rotateY(-fish.tailRotation));
+    mv = mult(mv, translate(0.4, 0.0, 0.0));
 
-    // Right fin and rotation
-    gl.uniform4fv(colorLoc, fish.finColor);
+    gl.uniform4fv(locColor, fish.finColor);
     mv = mult(mv, translate(0.0, 0.0, 0.05));
     mv = mult(mv, rotateY(fish.finRotation));
     mv = mult(mv, translate(0.0, 0.0, -0.05));
     gl.uniformMatrix4fv(mvLoc, false, flatten(mv));
-    gl.cullFace(gl.FRONT); // Inside
+    gl.cullFace(gl.FRONT);
     gl.drawArrays(gl.TRIANGLES, NumBodyBot + NumBodyTop + NumTail, NumRFin);
-    gl.cullFace(gl.BACK); // Outside
+    gl.cullFace(gl.BACK);
     gl.drawArrays(gl.TRIANGLES, NumBodyBot + NumBodyTop + NumTail, NumRFin);
 
-    // reverse to fish 0.0.0
-    mv = mult(mv, translate(0.0, 0.0, 0.05)); //___REVERSING___
-    mv = mult(mv, rotateY(-fish.finRotation)); //___REVERSING___
-    mv = mult(mv, translate(0.0, 0.0, -0.05)); //___REVERSING___
+    mv = mult(mv, translate(0.0, 0.0, 0.05));
+    mv = mult(mv, rotateY(-fish.finRotation));
+    mv = mult(mv, translate(0.0, 0.0, -0.05));
 
-    // Left fin and rotation
-    gl.uniform4fv(colorLoc, fish.finColor);
+    gl.uniform4fv(locColor, fish.finColor);
     mv = mult(mv, translate(0.0, 0.0, -0.05));
     mv = mult(mv, rotateY(-fish.finRotation));
     mv = mult(mv, translate(0.0, 0.0, 0.05));
     gl.uniformMatrix4fv(mvLoc, false, flatten(mv));
-    gl.cullFace(gl.FRONT); // Inside
+    gl.cullFace(gl.FRONT);
     gl.drawArrays(
         gl.TRIANGLES,
         NumBodyBot + NumBodyTop + NumTail + NumRFin,
         NumLFin
     );
-    gl.cullFace(gl.BACK); // Outside
+    gl.cullFace(gl.BACK);
 
     gl.drawArrays(
         gl.TRIANGLES,
@@ -550,17 +526,15 @@ function drawFish(mv, fish) {
         NumLFin
     );
 
-    // reverse to fish 0.0.0
-    mv = mult(mv, translate(0.0, 0.0, -0.05)); //___REVERSING___
-    mv = mult(mv, rotateY(-fish.finRotation)); //___REVERSING___
-    mv = mult(mv, translate(0.0, 0.0, 0.05)); //___REVERSING___
+    mv = mult(mv, translate(0.0, 0.0, -0.05));
+    mv = mult(mv, rotateY(-fish.finRotation));
+    mv = mult(mv, translate(0.0, 0.0, 0.05));
 
-    // reverse to main 0.0.0
-    mv = mult(mv, rotateY(90)); //___REVERSING___
-    mv = mult(mv, rotateY(toDegrees(fish.dir.sph.a))); //___REVERSING___
-    mv = mult(mv, rotateZ(toDegrees(fish.dir.sph.b))); //___REVERSING___
-    mv = mult(mv, scalem(1 / fish.size, 1 / fish.size, 1 / fish.size)); //___REVERSING___
-    mv = mult(mv, translate(-fish.pos.x, -fish.pos.y, -fish.pos.z)); //___REVERSING___
+    mv = mult(mv, rotateY(90));
+    mv = mult(mv, rotateY(toDegrees(fish.dir.sph.a)));
+    mv = mult(mv, rotateZ(toDegrees(fish.dir.sph.b)));
+    mv = mult(mv, scalem(1 / fish.size, 1 / fish.size, 1 / fish.size));
+    mv = mult(mv, translate(-fish.pos.x, -fish.pos.y, -fish.pos.z));
 }
 
 function render() {
@@ -574,17 +548,14 @@ function render() {
     mv = mult(mv, rotateX(spinX));
     mv = mult(mv, rotateY(spinY));
 
-    // Update and draw all fish
     for (let i = 0; i < fishCount; i++) {
-        updateFish(school[i], i);
-        drawFish(mv, school[i]);
+        updateFish(fishGroup[i], i);
+        drawFish(mv, fishGroup[i]);
     }
 
-    // Scale for fish container
     mv = mult(mv, scalem(boxSize, boxSize, boxSize));
 
-    //  Draw the frame for fish container
-    gl.uniform4fv(colorLoc, vec4(0.0, 0.0, 0.0, 1.0));
+    gl.uniform4fv(locColor, vec4(0.0, 0.0, 0.0, 1.0));
     gl.uniformMatrix4fv(mvLoc, false, flatten(mv));
     gl.drawArrays(
         gl.LINE_STRIP,
@@ -592,16 +563,15 @@ function render() {
         NumTankFrame
     );
 
-    gl.uniform4fv(colorLoc, vec4(0.0, 0.0, 0.5, 0.2));
+    gl.uniform4fv(locColor, vec4(0.0, 0.0, 0.5, 0.2));
     gl.uniformMatrix4fv(mvLoc, false, flatten(mv));
-    gl.cullFace(gl.FRONT); // Inside
+    gl.cullFace(gl.FRONT);
     gl.drawArrays(
         gl.TRIANGLES,
         NumBodyBot + NumBodyTop + NumTail + NumRFin + NumLFin,
         NumFishTank
     );
 
-    // Reverse
     mv = mult(mv, scalem(1 / boxSize, 1 / boxSize, 1 / boxSize));
 
     requestAnimFrame(render);
