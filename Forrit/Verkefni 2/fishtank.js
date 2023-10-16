@@ -21,7 +21,7 @@ var spinY = 0;
 var origX;
 var origY;
 
-var zView = boxSize * 2.5;
+var zView = boxSize * 3.0;
 
 var proLoc;
 var mvLoc;
@@ -152,13 +152,13 @@ var points = {
     ],
 };
 
-var NumBodyTop = points.fish.upperBody.length;
-var NumBodyBot = points.fish.lowerBody.length;
-var NumTail = points.fish.tail.length;
-var NumRFin = points.fish.rightFin.length;
-var NumLFin = points.fish.leftFin.length;
-var NumFishTank = points.boxFill.length;
-var NumTankFrame = points.boxFrame.length;
+var bodyTop = points.fish.upperBody.length;
+var bodyBot = points.fish.lowerBody.length;
+var tailCh = points.fish.tail.length;
+var rightFin = points.fish.rightFin.length;
+var leftFin = points.fish.leftFin.length;
+var fishTank = points.boxFill.length;
+var tankFrame = points.boxFrame.length;
 
 var vertices = points.fish.upperBody.concat(
     points.fish.lowerBody,
@@ -442,13 +442,11 @@ function calcDir(sep, coh, align, curr) {
     };
 }
 
-// Normalizes a vector
 function normalizeXYZ({ x, y, z }) {
     var len = Math.sqrt(x ** 2 + y ** 2 + z ** 2);
     return { x: x / len, y: y / len, z: z / len };
 }
 
-// Returns a normalized directional vector from a point to another
 function getDirFromPos(from, to, dist) {
     return {
         x: (to.x - from.x) / dist,
@@ -468,16 +466,16 @@ function drawFish(mv, fish) {
     gl.uniform4fv(locColor, fish.botColor);
     gl.uniformMatrix4fv(mvLoc, false, flatten(mv));
     gl.cullFace(gl.FRONT);
-    gl.drawArrays(gl.TRIANGLES, 0, NumBodyBot);
+    gl.drawArrays(gl.TRIANGLES, 0, bodyBot);
     gl.cullFace(gl.BACK);
-    gl.drawArrays(gl.TRIANGLES, 0, NumBodyBot);
+    gl.drawArrays(gl.TRIANGLES, 0, bodyBot);
 
     gl.uniform4fv(locColor, fish.bodyColor);
     gl.uniformMatrix4fv(mvLoc, false, flatten(mv));
     gl.cullFace(gl.FRONT);
-    gl.drawArrays(gl.TRIANGLES, NumBodyBot, NumBodyTop);
+    gl.drawArrays(gl.TRIANGLES, bodyBot, bodyTop);
     gl.cullFace(gl.BACK);
-    gl.drawArrays(gl.TRIANGLES, NumBodyBot, NumBodyTop);
+    gl.drawArrays(gl.TRIANGLES, bodyBot, bodyTop);
 
     gl.uniform4fv(locColor, fish.bodyColor);
     mv = mult(mv, translate(-0.4, 0.0, 0.0));
@@ -485,9 +483,9 @@ function drawFish(mv, fish) {
     mv = mult(mv, translate(0.4, 0.0, 0.0));
     gl.uniformMatrix4fv(mvLoc, false, flatten(mv));
     gl.cullFace(gl.FRONT);
-    gl.drawArrays(gl.TRIANGLES, NumBodyBot + NumBodyTop, NumTail);
+    gl.drawArrays(gl.TRIANGLES, bodyBot + bodyTop, tailCh);
     gl.cullFace(gl.BACK);
-    gl.drawArrays(gl.TRIANGLES, NumBodyBot + NumBodyTop, NumTail);
+    gl.drawArrays(gl.TRIANGLES, bodyBot + bodyTop, tailCh);
 
     mv = mult(mv, translate(-0.4, 0.0, 0.0));
     mv = mult(mv, rotateY(-fish.tailRotation));
@@ -499,9 +497,9 @@ function drawFish(mv, fish) {
     mv = mult(mv, translate(0.0, 0.0, -0.05));
     gl.uniformMatrix4fv(mvLoc, false, flatten(mv));
     gl.cullFace(gl.FRONT);
-    gl.drawArrays(gl.TRIANGLES, NumBodyBot + NumBodyTop + NumTail, NumRFin);
+    gl.drawArrays(gl.TRIANGLES, bodyBot + bodyTop + tailCh, rightFin);
     gl.cullFace(gl.BACK);
-    gl.drawArrays(gl.TRIANGLES, NumBodyBot + NumBodyTop + NumTail, NumRFin);
+    gl.drawArrays(gl.TRIANGLES, bodyBot + bodyTop + tailCh, rightFin);
 
     mv = mult(mv, translate(0.0, 0.0, 0.05));
     mv = mult(mv, rotateY(-fish.finRotation));
@@ -515,15 +513,15 @@ function drawFish(mv, fish) {
     gl.cullFace(gl.FRONT);
     gl.drawArrays(
         gl.TRIANGLES,
-        NumBodyBot + NumBodyTop + NumTail + NumRFin,
-        NumLFin
+        bodyBot + bodyTop + tailCh + rightFin,
+        leftFin
     );
     gl.cullFace(gl.BACK);
 
     gl.drawArrays(
         gl.TRIANGLES,
-        NumBodyBot + NumBodyTop + NumTail + NumRFin,
-        NumLFin
+        bodyBot + bodyTop + tailCh + rightFin,
+        leftFin
     );
 
     mv = mult(mv, translate(0.0, 0.0, -0.05));
@@ -559,8 +557,8 @@ function render() {
     gl.uniformMatrix4fv(mvLoc, false, flatten(mv));
     gl.drawArrays(
         gl.LINE_STRIP,
-        NumBodyBot + NumBodyTop + NumTail + NumRFin + NumLFin + NumFishTank,
-        NumTankFrame
+        bodyBot + bodyTop + tailCh + rightFin + leftFin + fishTank,
+        tankFrame
     );
 
     gl.uniform4fv(locColor, vec4(0.0, 0.0, 0.5, 0.2));
@@ -568,8 +566,8 @@ function render() {
     gl.cullFace(gl.FRONT);
     gl.drawArrays(
         gl.TRIANGLES,
-        NumBodyBot + NumBodyTop + NumTail + NumRFin + NumLFin,
-        NumFishTank
+        bodyBot + bodyTop + tailCh + rightFin + leftFin,
+        fishTank
     );
 
     mv = mult(mv, scalem(1 / boxSize, 1 / boxSize, 1 / boxSize));

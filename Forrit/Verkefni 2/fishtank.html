@@ -41,6 +41,22 @@ main()
     <div class="slidecontainer">
         <div class="slider">
             <div class="sliderTitle">
+                <p>Swim Speed</p>
+                <p id='speed'>0.5</p>
+            </div>
+            <input type="range" min="0.0" max="1.0" step="0.1" value="0.5" class="slidebar" id="speedSider"
+                oninput="updateSliders(this.value, 'speed')" onchange="updateSliders(this.value,'speed')">
+        </div>
+        <div class="slider">
+            <div class="sliderTitle">
+                <p>Fish Count</p>
+                <p id='fishCount'>50</p>
+            </div>
+            <input type="range" min="1" max="100" step="1" value="50" class="slidebar" id="fishCountSlider"
+                oninput="updateSliders(this.value, 'fishCount')" onchange="updateSliders(this.value,'fishCount')">
+        </div>
+        <div class="slider">
+            <div class="sliderTitle">
                 <p>Separation Distance</p>
                 <p id='sepDist'>50</p>
             </div>
@@ -86,22 +102,6 @@ main()
             </div>
             <input type="range" min="0.0" max="1.0" step="0.01" value="0.1" class="slidebar" id="cohForceSlider"
                 oninput="updateSliders(this.value, 'cohForce')" onchange="updateSliders(this.value,'cohForce')">
-        </div>
-        <div class="slider">
-            <div class="sliderTitle">
-                <p>Swim Speed</p>
-                <p id='speed'>0.5</p>
-            </div>
-            <input type="range" min="0.0" max="1.0" step="0.1" value="0.5" class="slidebar" id="speedSider"
-                oninput="updateSliders(this.value, 'speed')" onchange="updateSliders(this.value,'speed')">
-        </div>
-        <div class="slider">
-            <div class="sliderTitle">
-                <p>Fish Count</p>
-                <p id='fishCount'>50</p>
-            </div>
-            <input type="range" min="1" max="100" step="1" value="50" class="slidebar" id="fishCountSlider"
-                oninput="updateSliders(this.value, 'fishCount')" onchange="updateSliders(this.value,'fishCount')">
         </div>
 
 

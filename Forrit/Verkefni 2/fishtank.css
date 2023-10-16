@@ -1,21 +1,15 @@
 html {
   background-color: white;
-  font-size: 18px;
+  font-size: 14px;
   color: black;
-  font-family: "Francois One", sans-serif;
-}
-
-body {
-  display: flex;
-  justify-content: space-evenly;
-  align-items: center;
+  font-family: "Arial", sans-serif;
 }
 
 canvas {
   width: 100%;
   height: 100%;
-  max-width: 900px;
-  max-height: 900px;
+  max-width: 500px;
+  max-height: 500px;
   min-width: 300px;
   min-height: 300px;
 }
@@ -29,7 +23,7 @@ canvas {
 
 .slidecontainer {
   width: 100%;
-  max-width: 300px;
+  max-width: 100px;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -40,21 +34,21 @@ canvas {
   -webkit-appearance: none;
   appearance: none;
   width: 100%;
-  height: 20px;
-  border-radius: 20px;
+  height: 10px;
+  border-radius: 10px;
   opacity: 0.7;
   outline: none;
   background: -moz-radial-gradient(center,
       ellipse cover,
       rgba(12, 100, 12, 0) 0%,
-      rgba(113, 24, 24, 0.5) 100%);
+      rgba(5, 0, 0, 0.5) 100%);
   background: -webkit-radial-gradient(center,
       ellipse cover,
       rgba(15, 42, 161, 0) 0%,
-      rgba(163, 19, 19, 0.5) 100%);
+      rgba(0, 0, 0, 0.5) 100%);
   background: radial-gradient(ellipse at center,
       rgba(9, 74, 115, 0) 0%,
-      rgba(170, 18, 18, 0.5) 100%);
+      rgba(0, 0, 0, 0.5) 100%);
 
   -webkit-transition: 0.2s;
   transition: opacity 0.2s;
@@ -67,17 +61,17 @@ canvas {
 .slidebar::-webkit-slider-thumb {
   -webkit-appearance: none;
   appearance: none;
-  width: 20px;
-  height: 20px;
-  border-radius: 20px;
+  width: 10px;
+  height: 10px;
+  border-radius: 10px;
   background: black;
   cursor: pointer;
 }
 
 .slidebar::-moz-range-thumb {
-  width: 20px;
-  height: 20px;
-  border-radius: 20px;
+  width: 10px;
+  height: 10px;
+  border-radius: 10px;
   background: black;
   cursor: pointer;
 }
@@ -85,8 +79,8 @@ canvas {
 .switch {
   position: relative;
   display: inline-block;
-  width: 40px;
-  height: 20px;
+  width: 20px;
+  height: 10px;
 }
 
 .switch input {
