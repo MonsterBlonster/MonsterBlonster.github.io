@@ -21,7 +21,7 @@ var spinY = 0;
 var origX;
 var origY;
 
-var zView = boxSize * 3.0;
+var zView = boxSize * 2.5;
 
 var proLoc;
 var mvLoc;
